@@ -122,31 +122,29 @@ public class NeuralNetwork {
 
         //2. Train the hidden layers from right to left
 
-        for (int k = layers.size() - 2; k > 0; --k) {
-            for (Neuron neuron : layers.get(1)) {
-                for (Synapse inSynapse : neuron.getInConnections()) {
-                    double aj = neuron.getOutput();
-                    double ai = inSynapse.getInputNeuron().getOutput();
+        for (Neuron neuron : layers.get(2)) {
+            for (Synapse inSynapse : neuron.getInConnections()) {
+                double aj = neuron.getOutput();
+                double ai = inSynapse.getInputNeuron().getOutput();
 
-                    double sumKoutputs = 0;
-                    int j = 0;
+                double sumKoutputs = 0;
+                int j = 0;
 
-                    for (Synapse outSynapse : neuron.getOutConnections()) {
-                        Neuron out_neu = outSynapse.getOutputNeuron();
+                for (Synapse outSynapse : neuron.getOutConnections()) {
+                    Neuron out_neu = outSynapse.getOutputNeuron();
 
-                        double wjk = outSynapse.getWeight();
-                        double desired = expected.get(j++);
-                        double ak = out_neu.getOutput();
-                        sumKoutputs += -(desired - ak) * ak * (1 - ak) * wjk;
-                    }
-
-                    double partialDerivative = aj * (1 - aj) * ai * sumKoutputs;
-                    double deltaWeight = -learningRate * partialDerivative;
-                    double newWeight = inSynapse.getWeight() + deltaWeight;
-
-                    inSynapse.setDeltaWeight(deltaWeight);
-                    inSynapse.setWeight(newWeight + momentum * inSynapse.getPrevDeltaWeight());
+                    double wjk = outSynapse.getWeight();
+                    double desired = expected.get(j++);
+                    double ak = out_neu.getOutput();
+                    sumKoutputs += -(desired - ak) * ak * (1 - ak) * wjk;
                 }
+
+                double partialDerivative = aj * (1 - aj) * ai * sumKoutputs;
+                double deltaWeight = -learningRate * partialDerivative;
+                double newWeight = inSynapse.getWeight() + deltaWeight;
+
+                inSynapse.setDeltaWeight(deltaWeight);
+                inSynapse.setWeight(newWeight + momentum * inSynapse.getPrevDeltaWeight());
             }
         }
     }
