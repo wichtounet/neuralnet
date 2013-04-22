@@ -15,8 +15,6 @@ public class NormalNeuron extends AbstractNeuron implements Neuron {
         for(Synapse synapse : in){
             Neuron inNeuron = synapse.getInputNeuron();
 
-            inNeuron.activate();
-
             double w = synapse.getWeight();
             s += w * inNeuron.getOutput();
         }

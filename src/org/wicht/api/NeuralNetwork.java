@@ -5,8 +5,7 @@ import java.util.List;
 
 public class NeuralNetwork {
     private final List<InputNeuron> input = new ArrayList<>();
-    private final List<AbstractNeuron> output = new ArrayList<>();
-    private final List<AbstractNeuron> hidden = new ArrayList<>();
+    private final List<List<AbstractNeuron>> layers = new ArrayList<>();
 
     private NormalNeuron bias = new NormalNeuron();
 
@@ -21,12 +20,15 @@ public class NeuralNetwork {
     }
 
     public void build(int i, int h, int o){
-        //Build the intput layer
+        //1. Build the intput layer
         for(int n = 0; n < i; ++n){
             input.add(new InputNeuron());
         }
 
-        //Build the hidden layer
+        //2. Build the hidden layer
+
+        layers.add(new ArrayList<AbstractNeuron>(h));
+
         for(int n = 0; n < h; ++n){
             NormalNeuron neuron = new NormalNeuron();
             neuron.setFunction(function);
@@ -40,15 +42,18 @@ public class NeuralNetwork {
 
             neuron.setBiasConnection(new Synapse(bias, neuron));
 
-            hidden.add(neuron);
+            layers.get(0).add(neuron);
         }
 
         //Build the output layer
+
+        layers.add(new ArrayList<AbstractNeuron>(o));
+
         for(int n = 0; n < o; ++n){
             NormalNeuron neuron = new NormalNeuron();
             neuron.setFunction(function);
 
-            for(AbstractNeuron inputNeuron : hidden){
+            for(AbstractNeuron inputNeuron : layers.get(0)){
                 Synapse synapse = new Synapse(inputNeuron, neuron);
 
                 inputNeuron.addOutputSynapse(synapse);
@@ -57,8 +62,12 @@ public class NeuralNetwork {
 
             neuron.setBiasConnection(new Synapse(bias, neuron));
 
-            output.add(neuron);
+            getOutputLayer().add(neuron);
         }
+    }
+
+    private List<AbstractNeuron> getOutputLayer() {
+        return layers.get(layers.size() - 1);
     }
 
     public void train(List<List<Double>> inputs, List<List<Double>> expected, int maxIterations, double maxError){
@@ -102,7 +111,7 @@ public class NeuralNetwork {
         }
 
         for(int i = 0; i < expected.size(); ++i){
-            Neuron neuron = output.get(i);
+            Neuron neuron = getOutputLayer().get(i);
 
             for(Synapse synapse : neuron.getInConnections()){
                 double ak = neuron.getOutput();
@@ -118,7 +127,7 @@ public class NeuralNetwork {
             }
         }
 
-        for(Neuron neuron : hidden){
+        for(Neuron neuron : layers.get(0)){
             for(Synapse inSynapse : neuron.getInConnections()){
                 double aj = neuron.getOutput();
                 double ai = inSynapse.getInputNeuron().getOutput();
@@ -150,13 +159,15 @@ public class NeuralNetwork {
             input.get(i).setInput(inputs.get(i));
         }
 
-        for(Neuron neuron : output){
-            neuron.activate();
+        for(List<AbstractNeuron> layer : layers){
+            for(Neuron neuron : layer){
+                neuron.activate();
+            }
         }
 
         List<Double> results = new ArrayList<>();
 
-        for(Neuron neuron : output){
+        for(Neuron neuron : getOutputLayer()){
            results.add(neuron.getOutput());
         }
 
