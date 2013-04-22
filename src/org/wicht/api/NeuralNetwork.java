@@ -146,15 +146,21 @@ public class NeuralNetwork {
     }
 
     public List<Double> activate(List<Double> inputs) {
+        //1. Set inputs in the leftmost layer
+
         for (int i = 0; i < getInputLayer().size(); ++i) {
             getInputLayer().get(i).setOutput(inputs.get(i));
         }
+
+        //2. Activate each neuron from left to right
 
         for (List<AbstractNeuron> layer : layers) {
             for (Neuron neuron : layer) {
                 neuron.activate();
             }
         }
+
+        //3. Collect the results
 
         List<Double> results = new ArrayList<>();
 
