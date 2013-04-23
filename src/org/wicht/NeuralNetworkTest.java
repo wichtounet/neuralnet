@@ -36,10 +36,10 @@ public final class NeuralNetworkTest {
 
         NeuralNetwork network = new NeuralNetwork();
         network.setFunction(new Sigmoid());
-        network.build(2, 4, 1);
+        network.build(2, 24, 500, 64, 1);
         network.train(inputs, outputs, 50000, 0.001);
 
-        for(List<Double> input : inputs){
+        for (List<Double> input : inputs) {
             List<Double> output = network.activate(input);
 
             System.out.println("Input: " + input);
