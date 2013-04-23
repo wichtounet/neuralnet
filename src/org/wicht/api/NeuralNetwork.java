@@ -129,18 +129,18 @@ public class NeuralNetwork {
 
         for (int l = layers.size() - 2; l > 0; --l) {
             for (Neuron neuron : layers.get(l)) {
+                double aj = neuron.getOutput();
+
+                double outputDerivativeSum = 0;
+                for (Synapse outSynapse : neuron.getOutConnections()) {
+                    outputDerivativeSum += outSynapse.getDeltaWeight() * outSynapse.getWeight();
+                }
+
                 for (Synapse inSynapse : neuron.getInConnections()) {
-                    double aj = neuron.getOutput();
                     double ai = inSynapse.getInputNeuron().getOutput();
 
-                    double outputDerivativeSum = 0;
-
-                    for (Synapse outSynapse : neuron.getOutConnections()) {
-                        outputDerivativeSum += outSynapse.getDeltaWeight() * outSynapse.getWeight();
-                    }
-
                     double partialDerivative = (1 - aj) * ai * outputDerivativeSum;
-                    double deltaWeight = partialDerivative;
+                    double deltaWeight = 1 * partialDerivative;
                     double newWeight = inSynapse.getWeight() + deltaWeight;
 
                     inSynapse.setDeltaWeight(deltaWeight);
