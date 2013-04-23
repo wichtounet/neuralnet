@@ -6,7 +6,7 @@ import java.util.List;
 public class NeuralNetwork {
     private final List<List<AbstractNeuron>> layers = new ArrayList<>();
 
-    private final NormalNeuron bias = new NormalNeuron();
+    private final InputNeuron bias = new InputNeuron();
 
     final double epsilon = 0.00000000001;
     final double learningRate = 0.9f;
@@ -19,6 +19,10 @@ public class NeuralNetwork {
     }
 
     public void build(int i, int... sizes) {
+        //0. Init the bias neuron
+
+        bias.setOutput(1);
+
         //1. Build the intput layer
 
         layers.add(new ArrayList<AbstractNeuron>(i));
@@ -44,7 +48,7 @@ public class NeuralNetwork {
                     neuron.addInputSynapse(synapse);
                 }
 
-                neuron.setBiasConnection(new Synapse(bias, neuron));
+                neuron.addInputSynapse(new Synapse(bias, neuron));
 
                 layer.add(neuron);
             }
