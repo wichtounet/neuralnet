@@ -1,6 +1,7 @@
 package org.wicht.neuralnet;
 
 import org.wicht.neuralnet.functions.ActivationFunction;
+import org.wicht.neuralnet.util.Normalizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,14 @@ public class NeuralNetwork {
 
     private ActivationFunction[] functions;
 
+    private Normalizer inputNormalizer;
+
     public void setFunctions(ActivationFunction... functions) {
         this.functions = functions;
+    }
+
+    public void setInputNormalizer(Normalizer inputNormalizer) {
+        this.inputNormalizer = inputNormalizer;
     }
 
     public void build(int i, int... sizes) {
@@ -153,10 +160,22 @@ public class NeuralNetwork {
     }
 
     public List<Double> activate(List<Double> inputs) {
+        List<Double> normalizedInputs;
+
+        if (inputNormalizer != null) {
+            normalizedInputs = new ArrayList<>();
+
+            for (Double d : inputs) {
+                normalizedInputs.add(inputNormalizer.normalize(d));
+            }
+        } else {
+            normalizedInputs = inputs;
+        }
+
         //1. Set inputs in the leftmost layer
 
         for (int i = 0; i < getInputLayer().size(); ++i) {
-            getInputLayer().get(i).setOutput(inputs.get(i));
+            getInputLayer().get(i).setOutput(normalizedInputs.get(i));
         }
 
         //2. Activate each neuron from left to right
