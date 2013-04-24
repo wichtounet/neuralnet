@@ -1,6 +1,6 @@
 package org.wicht.neuralnet.util;
 
-public class InputNormalizer implements Normalizer {
+public class InputNormalizer extends AbstractNormalizer {
     private final double LOW = -1;
     private final double HIGH = 1;
 

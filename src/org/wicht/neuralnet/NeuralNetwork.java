@@ -1,6 +1,8 @@
 package org.wicht.neuralnet;
 
+import com.sun.istack.internal.NotNull;
 import org.wicht.neuralnet.functions.ActivationFunction;
+import org.wicht.neuralnet.util.IdentityNormalizer;
 import org.wicht.neuralnet.util.InputNormalizer;
 import org.wicht.neuralnet.util.Normalizer;
 import org.wicht.neuralnet.util.OutputNormalizer;
@@ -13,14 +15,17 @@ public class NeuralNetwork {
 
     private final InputNeuron bias = new InputNeuron();
 
-    final double epsilon = 0.00000000001;
-    final double learningRate = 0.9f;
-    final double momentum = 0.3f;
+    private static final double epsilon = 0.00000000001;
+    private static final double learningRate = 0.9f;
+    private static final double momentum = 0.3f;
 
     private ActivationFunction[] functions;
 
-    private Normalizer inputNormalizer;
-    private Normalizer outputNormalizer;
+    @NotNull
+    private Normalizer inputNormalizer = new IdentityNormalizer();
+
+    @NotNull
+    private Normalizer outputNormalizer = new IdentityNormalizer();
 
     public void setFunctions(ActivationFunction... functions) {
         this.functions = functions;
@@ -84,41 +89,9 @@ public class NeuralNetwork {
     public void train(List<List<Double>> inputs, List<List<Double>> expected, int maxIterations, double maxError) {
         System.out.println("Start training");
 
-        List<List<Double>> normalizedInputs;
-
-        if (inputNormalizer != null) {
-            normalizedInputs = new ArrayList<>();
-
-            for (List<Double> list : inputs) {
-                List<Double> normalized = new ArrayList<>();
-
-                for (Double d : list) {
-                    normalized.add(inputNormalizer.normalize(d));
-                }
-
-                normalizedInputs.add(normalized);
-            }
-        } else {
-            normalizedInputs = inputs;
-        }
-
-        List<List<Double>> normalizedExpected;
-
-        if (outputNormalizer != null) {
-            normalizedExpected = new ArrayList<>();
-
-            for (List<Double> list : expected) {
-                List<Double> normalized = new ArrayList<>();
-
-                for (Double d : list) {
-                    normalized.add(outputNormalizer.normalize(d));
-                }
-
-                normalizedExpected.add(normalized);
-            }
-        } else {
-            normalizedExpected = expected;
-        }
+        //Normalize if necessary
+        List<List<Double>> normalizedInputs = inputNormalizer.normalize2D(inputs);
+        List<List<Double>> normalizedExpected = outputNormalizer.normalize2D(expected);
 
         int iteration;
 
@@ -202,30 +175,17 @@ public class NeuralNetwork {
         }
     }
 
+    /**
+     * Activate the neural network on the given inputs and return its output.
+     * <p/>
+     * The inputs must be of the normalized range or the range indicating via setInputRange.
+     * The outputs must of the normalized range or the range indicated via setOutputRange.
+     *
+     * @param inputs The inputs.
+     * @return The outputs.
+     */
     public List<Double> activate(List<Double> inputs) {
-        List<Double> normalizedInputs;
-
-        if (inputNormalizer != null) {
-            normalizedInputs = new ArrayList<>();
-
-            for (Double d : inputs) {
-                normalizedInputs.add(inputNormalizer.normalize(d));
-            }
-        } else {
-            normalizedInputs = inputs;
-        }
-
-        List<Double> results = new ArrayList<>();
-
-        for (Double result : activateImpl(normalizedInputs)) {
-            if (outputNormalizer != null) {
-                results.add(outputNormalizer.denormalize(result));
-            } else {
-                results.add(result);
-            }
-        }
-
-        return results;
+        return outputNormalizer.denormalize(activateImpl(inputNormalizer.normalize(inputs)));
     }
 
     /**
