@@ -1,6 +1,6 @@
 package org.wicht.neuralnet;
 
-import org.wicht.neuralnet.functions.NeuronFunction;
+import org.wicht.neuralnet.functions.ActivationFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,10 @@ public class NeuralNetwork {
     final double learningRate = 0.9f;
     final double momentum = 0.7f;
 
-    private NeuronFunction function;
+    private ActivationFunction[] functions;
 
-    public void setFunction(NeuronFunction function) {
-        this.function = function;
+    public void setFunctions(ActivationFunction... functions) {
+        this.functions = functions;
     }
 
     public void build(int i, int... sizes) {
@@ -41,7 +41,7 @@ public class NeuralNetwork {
 
             for (int n = 0; n < size; ++n) {
                 NormalNeuron neuron = new NormalNeuron();
-                neuron.setFunction(function);
+                neuron.setFunction(functions[k]);
 
                 for (AbstractNeuron inputNeuron : layers.get(k)) {
                     Synapse synapse = new Synapse(inputNeuron, neuron);
@@ -97,7 +97,7 @@ public class NeuralNetwork {
     }
 
     private void backPropagate(List<Double> expected) {
-        for (int i = 0; i < expected.size(); ++i) {
+        /*for (int i = 0; i < expected.size(); ++i) {
             double d = expected.get(i);
 
             if (d < 0) {
@@ -105,7 +105,7 @@ public class NeuralNetwork {
             } else if (d > 1) {
                 expected.set(i, 1 - epsilon);
             }
-        }
+        }*/
 
         //1. Train the output layer
 

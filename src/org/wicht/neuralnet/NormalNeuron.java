@@ -1,9 +1,9 @@
 package org.wicht.neuralnet;
 
-import org.wicht.neuralnet.functions.NeuronFunction;
+import org.wicht.neuralnet.functions.ActivationFunction;
 
 public class NormalNeuron extends AbstractNeuron {
-    private NeuronFunction function;
+    private ActivationFunction function;
 
     @Override
     public void activate() {
@@ -19,7 +19,7 @@ public class NormalNeuron extends AbstractNeuron {
         setOutput(function.activate(s));
     }
 
-    public void setFunction(NeuronFunction function) {
+    public void setFunction(ActivationFunction function) {
         this.function = function;
     }
 }
