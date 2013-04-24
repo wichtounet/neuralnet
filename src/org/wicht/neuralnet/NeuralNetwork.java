@@ -13,11 +13,12 @@ public class NeuralNetwork {
 
     final double epsilon = 0.00000000001;
     final double learningRate = 0.9f;
-    final double momentum = 0.7f;
+    final double momentum = 0.3f;
 
     private ActivationFunction[] functions;
 
     private Normalizer inputNormalizer;
+    private Normalizer outputNormalizer;
 
     public void setFunctions(ActivationFunction... functions) {
         this.functions = functions;
@@ -25,6 +26,10 @@ public class NeuralNetwork {
 
     public void setInputNormalizer(Normalizer inputNormalizer) {
         this.inputNormalizer = inputNormalizer;
+    }
+
+    public void setOutputNormalizer(Normalizer outputNormalizer) {
+        this.outputNormalizer = outputNormalizer;
     }
 
     public void build(int i, int... sizes) {
@@ -77,20 +82,56 @@ public class NeuralNetwork {
     public void train(List<List<Double>> inputs, List<List<Double>> expected, int maxIterations, double maxError) {
         System.out.println("Start training");
 
+        List<List<Double>> normalizedInputs;
+
+        if (inputNormalizer != null) {
+            normalizedInputs = new ArrayList<>();
+
+            for (List<Double> list : inputs) {
+                List<Double> normalized = new ArrayList<>();
+
+                for (Double d : list) {
+                    normalized.add(inputNormalizer.normalize(d));
+                }
+
+                normalizedInputs.add(normalized);
+            }
+        } else {
+            normalizedInputs = inputs;
+        }
+
+        List<List<Double>> normalizedExpected;
+
+        if (outputNormalizer != null) {
+            normalizedExpected = new ArrayList<>();
+
+            for (List<Double> list : expected) {
+                List<Double> normalized = new ArrayList<>();
+
+                for (Double d : list) {
+                    normalized.add(outputNormalizer.normalize(d));
+                }
+
+                normalizedExpected.add(normalized);
+            }
+        } else {
+            normalizedExpected = expected;
+        }
+
         int iteration;
 
         double error = 1;
         for (iteration = 0; iteration < maxIterations && error > maxError; ++iteration) {
             error = 0;
 
-            for (int p = 0; p < inputs.size(); ++p) {
-                List<Double> output = activate(inputs.get(p));
+            for (int p = 0; p < normalizedInputs.size(); ++p) {
+                List<Double> output = activateImpl(normalizedInputs.get(p));
 
-                for (int j = 0; j < expected.get(p).size(); ++j) {
-                    error += Math.pow(output.get(j) - expected.get(p).get(j), 2);
+                for (int j = 0; j < normalizedExpected.get(p).size(); ++j) {
+                    error += Math.pow(output.get(j) - normalizedExpected.get(p).get(j), 2);
                 }
 
-                backPropagate(expected.get(p));
+                backPropagate(normalizedExpected.get(p));
             }
         }
 
@@ -104,7 +145,7 @@ public class NeuralNetwork {
     }
 
     private void backPropagate(List<Double> expected) {
-        /*for (int i = 0; i < expected.size(); ++i) {
+        for (int i = 0; i < expected.size(); ++i) {
             double d = expected.get(i);
 
             if (d < 0) {
@@ -112,7 +153,7 @@ public class NeuralNetwork {
             } else if (d > 1) {
                 expected.set(i, 1 - epsilon);
             }
-        }*/
+        }
 
         //1. Train the output layer
 
@@ -172,10 +213,32 @@ public class NeuralNetwork {
             normalizedInputs = inputs;
         }
 
+        List<Double> results = new ArrayList<>();
+
+        for (Double result : activateImpl(normalizedInputs)) {
+            if (outputNormalizer != null) {
+                results.add(outputNormalizer.denormalize(result));
+            } else {
+                results.add(result);
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * Activate the neural network on the given inputs and return its output.
+     * <p/>
+     * The inputs must be normalized and the output will be normalized.
+     *
+     * @param inputs The normalized inputs.
+     * @return The normalized outputs.
+     */
+    private List<Double> activateImpl(List<Double> inputs) {
         //1. Set inputs in the leftmost layer
 
         for (int i = 0; i < getInputLayer().size(); ++i) {
-            getInputLayer().get(i).setOutput(normalizedInputs.get(i));
+            getInputLayer().get(i).setOutput(inputs.get(i));
         }
 
         //2. Activate each neuron from left to right

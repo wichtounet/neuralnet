@@ -1,13 +1,16 @@
 package org.wicht.neuralnet.util;
 
 public class Normalizer {
-    public static final double LOW = -1;
-    public static final double HIGH = 1;
+    private final double LOW;
+    private final double HIGH;
 
     private final double low;
     private final double high;
 
-    public Normalizer(double low, double high) {
+    public Normalizer(double low1, double high1, double low, double high) {
+        LOW = low1;
+        HIGH = high1;
+
         this.low = low;
         this.high = high;
     }
