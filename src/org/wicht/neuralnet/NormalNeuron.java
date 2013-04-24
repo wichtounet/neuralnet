@@ -1,4 +1,6 @@
-package org.wicht.api;
+package org.wicht.neuralnet;
+
+import org.wicht.neuralnet.functions.NeuronFunction;
 
 public class NormalNeuron extends AbstractNeuron {
     private NeuronFunction function;

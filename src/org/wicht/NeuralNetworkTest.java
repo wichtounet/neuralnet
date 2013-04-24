@@ -1,7 +1,7 @@
 package org.wicht;
 
-import org.wicht.api.BinarySigmoid;
-import org.wicht.api.NeuralNetwork;
+import org.wicht.neuralnet.NeuralNetwork;
+import org.wicht.neuralnet.functions.BinarySigmoid;
 
 import java.util.ArrayList;
 import java.util.Arrays;

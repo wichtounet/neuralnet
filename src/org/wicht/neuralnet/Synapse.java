@@ -1,4 +1,4 @@
-package org.wicht.api;
+package org.wicht.neuralnet;
 
 public class Synapse {
     private final Neuron inputNeuron;

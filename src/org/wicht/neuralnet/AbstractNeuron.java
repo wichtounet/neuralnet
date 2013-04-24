@@ -1,4 +1,4 @@
-package org.wicht.api;
+package org.wicht.neuralnet;
 
 import java.util.ArrayList;
 import java.util.List;

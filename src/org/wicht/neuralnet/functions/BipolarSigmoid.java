@@ -1,4 +1,4 @@
-package org.wicht.api;
+package org.wicht.neuralnet.functions;
 
 public class BipolarSigmoid implements NeuronFunction {
     @Override
