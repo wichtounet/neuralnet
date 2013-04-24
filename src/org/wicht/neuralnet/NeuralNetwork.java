@@ -1,7 +1,9 @@
 package org.wicht.neuralnet;
 
 import org.wicht.neuralnet.functions.ActivationFunction;
+import org.wicht.neuralnet.util.InputNormalizer;
 import org.wicht.neuralnet.util.Normalizer;
+import org.wicht.neuralnet.util.OutputNormalizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +26,12 @@ public class NeuralNetwork {
         this.functions = functions;
     }
 
-    public void setInputNormalizer(Normalizer inputNormalizer) {
-        this.inputNormalizer = inputNormalizer;
+    public void setInputRange(double low, double high) {
+        inputNormalizer = new InputNormalizer(low, high);
     }
 
-    public void setOutputNormalizer(Normalizer outputNormalizer) {
-        this.outputNormalizer = outputNormalizer;
+    public void setOutputRange(double low, double high) {
+        outputNormalizer = new OutputNormalizer(low, high);
     }
 
     public void build(int i, int... sizes) {

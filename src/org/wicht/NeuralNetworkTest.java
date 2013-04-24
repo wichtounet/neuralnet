@@ -2,7 +2,6 @@ package org.wicht;
 
 import org.wicht.neuralnet.NeuralNetwork;
 import org.wicht.neuralnet.functions.BinarySigmoid;
-import org.wicht.neuralnet.util.Normalizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,9 +53,6 @@ public final class NeuralNetworkTest {
 
         List<List<Double>> inputs = new ArrayList<>();
 
-        Normalizer inputNormalizer = new Normalizer(-1, 1, 0.0, 100.0);
-        Normalizer outputNormalizer = new Normalizer(0, 1, 0.0, 10.0);
-
         for (int i = 1; i <= 100; ++i) {
             inputs.add(Arrays.asList((double) i));
         }
@@ -69,8 +65,8 @@ public final class NeuralNetworkTest {
 
         NeuralNetwork network = new NeuralNetwork();
         network.setFunctions(new BinarySigmoid(), new BinarySigmoid());
-        network.setInputNormalizer(inputNormalizer);
-        network.setOutputNormalizer(outputNormalizer);
+        network.setInputRange(0.0, 100.0);
+        network.setOutputRange(0.0, 10.0);
         network.build(1, 10, 1);
         network.train(inputs, outputs, 50000, 0.01);
 

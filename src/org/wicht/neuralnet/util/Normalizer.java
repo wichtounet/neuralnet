@@ -1,25 +1,14 @@
 package org.wicht.neuralnet.util;
 
-public class Normalizer {
-    private final double LOW;
-    private final double HIGH;
+/**
+ * Created with IntelliJ IDEA.
+ * User: wichtounet
+ * Date: 4/24/13
+ * Time: 11:39 AM
+ * To change this template use File | Settings | File Templates.
+ */
+public interface Normalizer {
+    double normalize(double x);
 
-    private final double low;
-    private final double high;
-
-    public Normalizer(double low1, double high1, double low, double high) {
-        LOW = low1;
-        HIGH = high1;
-
-        this.low = low;
-        this.high = high;
-    }
-
-    public double normalize(double x) {
-        return (x - low) / (high - low) * (HIGH - LOW) + LOW;
-    }
-
-    public double denormalize(double x) {
-        return ((low - high) * x - HIGH * low + high * LOW) / (LOW - HIGH);
-    }
+    double denormalize(double x);
 }
