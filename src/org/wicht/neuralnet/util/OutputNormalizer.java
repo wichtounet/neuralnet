@@ -1,8 +1,8 @@
 package org.wicht.neuralnet.util;
 
 public class OutputNormalizer extends AbstractNormalizer {
-    private final double LOW = 0;
-    private final double HIGH = 1;
+    private static final double LOW = 0;
+    private static final double HIGH = 1;
 
     private final double low;
     private final double high;
